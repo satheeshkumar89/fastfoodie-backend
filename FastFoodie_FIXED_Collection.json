@@ -1,0 +1,522 @@
+{
+    "info": {
+        "_postman_id": "fastfoodie-fixed-final",
+        "name": "FastFoodie API - FIXED Collection",
+        "description": "Fixed collection with correct request formats for all endpoints",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "token",
+                "value": "{{access_token}}",
+                "type": "string"
+            }
+        ]
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8000"
+        },
+        {
+            "key": "access_token",
+            "value": ""
+        },
+        {
+            "key": "phone_number",
+            "value": "+918668198712"
+        },
+        {
+            "key": "otp_code",
+            "value": ""
+        }
+    ],
+    "item": [
+        {
+            "name": "🔐 1. Authentication (Start Here)",
+            "item": [
+                {
+                    "name": "1. Send OTP",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    if (jsonData.data && jsonData.data.otp) {",
+                                    "        pm.collectionVariables.set('otp_code', jsonData.data.otp);",
+                                    "        console.log('✓ OTP:', jsonData.data.otp);",
+                                    "    }",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"phone_number\": \"{{phone_number}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/auth/send-otp",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "send-otp"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "2. Verify OTP",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.collectionVariables.set('access_token', jsonData.access_token);",
+                                    "    console.log('✓ Token saved');",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"phone_number\": \"{{phone_number}}\",\n  \"otp_code\": \"{{otp_code}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/auth/verify-otp",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "verify-otp"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "🏪 2. Restaurant Setup",
+            "item": [
+                {
+                    "name": "Get Restaurant Types",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/restaurant/types",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "restaurant",
+                                "types"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Restaurant",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"restaurant_name\": \"Tasty Bites\",\n  \"restaurant_type\": \"restaurant\",\n  \"fssai_license_number\": \"12345678901234\",\n  \"opening_time\": \"09:00\",\n  \"closing_time\": \"22:00\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/restaurant/details",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "restaurant",
+                                "details"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Restaurant Details",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/restaurant/details",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "restaurant",
+                                "details"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Available Cuisines",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/restaurant/cuisines/available",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "restaurant",
+                                "cuisines",
+                                "available"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Add Restaurant Address",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"latitude\": 12.9716,\n  \"longitude\": 77.5946,\n  \"address_line_1\": \"123 Main Street\",\n  \"address_line_2\": \"Near City Center\",\n  \"city\": \"Bangalore\",\n  \"state\": \"Karnataka\",\n  \"pincode\": \"560001\",\n  \"landmark\": \"Opposite Metro Station\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/restaurant/address",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "restaurant",
+                                "address"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Presigned URL (Use Query Params)",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/restaurant/documents/presigned-url?document_type=fssai_license&filename=license.pdf&content_type=application/pdf",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "restaurant",
+                                "documents",
+                                "presigned-url"
+                            ],
+                            "query": [
+                                {
+                                    "key": "document_type",
+                                    "value": "fssai_license"
+                                },
+                                {
+                                    "key": "filename",
+                                    "value": "license.pdf"
+                                },
+                                {
+                                    "key": "content_type",
+                                    "value": "application/pdf"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Confirm Document Upload (Use Query Params)",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/restaurant/documents/confirm-upload?document_type=fssai_license&file_key=uploads/fssai_license_123.pdf&filename=license.pdf",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "restaurant",
+                                "documents",
+                                "confirm-upload"
+                            ],
+                            "query": [
+                                {
+                                    "key": "document_type",
+                                    "value": "fssai_license"
+                                },
+                                {
+                                    "key": "file_key",
+                                    "value": "uploads/fssai_license_123.pdf"
+                                },
+                                {
+                                    "key": "filename",
+                                    "value": "license.pdf"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "🍕 3. Menu Management",
+            "item": [
+                {
+                    "name": "Get Menu Categories",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/menu/categories",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "menu",
+                                "categories"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get All Menu Items",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/menu/items",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "menu",
+                                "items"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Add Menu Item",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Margherita Pizza\",\n  \"description\": \"Classic pizza with tomato sauce, mozzarella, and basil\",\n  \"price\": 299.00,\n  \"discount_price\": 249.00,\n  \"category\": \"Main Course\",\n  \"is_vegetarian\": true,\n  \"is_available\": true,\n  \"preparation_time\": 20\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/menu/item/add",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "menu",
+                                "item",
+                                "add"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Menu Item",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Margherita Pizza (Updated)\",\n  \"price\": 349.00\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/menu/item/update/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "menu",
+                                "item",
+                                "update",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Item Availability",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"is_available\": false\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/menu/item/availability/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "menu",
+                                "item",
+                                "availability",
+                                "1"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "📊 4. Dashboard",
+            "item": [
+                {
+                    "name": "Get Today Summary",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/dashboard/today-summary",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "dashboard",
+                                "today-summary"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Quick Actions",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/dashboard/quick-actions",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "dashboard",
+                                "quick-actions"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "📦 5. Orders",
+            "item": [
+                {
+                    "name": "Get New Orders",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/orders/new",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "new"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Ongoing Orders",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/orders/ongoing",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "ongoing"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Accept Order",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/orders/1/accept",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "1",
+                                "accept"
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

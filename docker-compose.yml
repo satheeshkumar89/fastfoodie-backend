@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: fastfoodie_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: fastfoodie
+      MYSQL_USER: fastfoodie_user
+      MYSQL_PASSWORD: fastfoodie_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database_schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - fastfoodie_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # Redis (for WebSocket pub/sub)
+  redis:
+    image: redis:7-alpine
+    container_name: fastfoodie_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - fastfoodie_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # FastAPI Application
+  api:
+    build: .
+    container_name: fastfoodie_api
+    environment:
+      DATABASE_URL: mysql+pymysql://fastfoodie_user:fastfoodie_pass@mysql:3306/fastfoodie
+      SECRET_KEY: your-secret-key-change-in-production
+      ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 30
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+      S3_BUCKET_NAME: ${S3_BUCKET_NAME}
+      OTP_EXPIRY_MINUTES: 5
+      OTP_LENGTH: 6
+      REDIS_URL: redis://redis:6379
+      ENVIRONMENT: production
+    ports:
+      - "8000:8000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - fastfoodie_network
+    volumes:
+      - ./app:/app/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+volumes:
+  mysql_data:
+
+networks:
+  fastfoodie_network:
+    driver: bridge

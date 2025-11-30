@@ -1,0 +1,995 @@
+{
+  "info": {
+    "_postman_id": "fastfoodie-complete-api",
+    "name": "FastFoodie API - Complete Collection",
+    "description": "Auto-generated from OpenAPI spec - All working endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "access_token",
+      "value": ""
+    },
+    {
+      "key": "phone_number",
+      "value": "+918668198712"
+    },
+    {
+      "key": "otp_code",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Send Otp",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/send-otp",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "send-otp"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.otp) {",
+                  "        pm.collectionVariables.set('otp_code', jsonData.data.otp);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Verify Otp Endpoint",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/verify-otp",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "verify-otp"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('access_token', jsonData.access_token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Resend Otp",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/resend-otp",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "resend-otp"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.otp) {",
+                  "        pm.collectionVariables.set('otp_code', jsonData.data.otp);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Get Today Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/dashboard/today-summary",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "dashboard",
+                "today-summary"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Quick Actions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/dashboard/quick-actions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "dashboard",
+                "quick-actions"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Get Dashboard Overview",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/dashboard/overview",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "dashboard",
+                "overview"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Menu",
+      "item": [
+        {
+          "name": "Get Menu Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/menu/categories",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "menu",
+                "categories"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Menu Items",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/menu/items",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "menu",
+                "items"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add Menu Item",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/menu/item/add",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "menu",
+                "item",
+                "add"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        },
+        {
+          "name": "Update Menu Item",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/menu/item/update/{item_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "menu",
+                "item",
+                "update",
+                "{item_id}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        },
+        {
+          "name": "Delete Menu Item",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/menu/item/{item_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "menu",
+                "item",
+                "{item_id}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Item Availability",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/menu/item/availability/{item_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "menu",
+                "item",
+                "availability",
+                "{item_id}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        },
+        {
+          "name": "Mark Item Out Of Stock",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/menu/item/out-of-stock/{item_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "menu",
+                "item",
+                "out-of-stock",
+                "{item_id}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Duplicate Menu Item",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/menu/item/duplicate/{item_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "menu",
+                "item",
+                "duplicate",
+                "{item_id}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Get New Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/orders/new",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "new"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Ongoing Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/orders/ongoing",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "ongoing"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Completed Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/orders/completed",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "completed"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Accept Order",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/orders/{order_id}/accept",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "{order_id}",
+                "accept"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Preparing Order",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/orders/{order_id}/preparing",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "{order_id}",
+                "preparing"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Ready Order",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/orders/{order_id}/ready",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "{order_id}",
+                "ready"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Pickedup Order",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/orders/{order_id}/pickedup",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "{order_id}",
+                "pickedup"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delivered Order",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/orders/{order_id}/delivered",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "{order_id}",
+                "delivered"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Reject Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/{order_id}/reject",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "{order_id}",
+                "reject"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        },
+        {
+          "name": "Get Order Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/orders/{order_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "{order_id}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Other",
+      "item": [
+        {
+          "name": "Read Root",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": []
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "health"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Owner",
+      "item": [
+        {
+          "name": "Get Owner Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/owner/details",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "owner",
+                "details"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Owner Details",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/owner/details",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "owner",
+                "details"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        },
+        {
+          "name": "Create Or Update Owner Details",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/owner/details",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "owner",
+                "details"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Restaurant",
+      "item": [
+        {
+          "name": "Get Restaurant Types",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/restaurant/types",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "restaurant",
+                "types"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Get Restaurant Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/restaurant/details",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "restaurant",
+                "details"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Restaurant Details",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/restaurant/details",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "restaurant",
+                "details"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        },
+        {
+          "name": "Create Restaurant Details",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/restaurant/details",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "restaurant",
+                "details"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        },
+        {
+          "name": "Get Available Cuisines",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/restaurant/cuisines/available",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "restaurant",
+                "cuisines",
+                "available"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Add Restaurant Cuisines",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/restaurant/cuisines",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "restaurant",
+                "cuisines"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        },
+        {
+          "name": "Update Restaurant Address",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/restaurant/address",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "restaurant",
+                "address"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        },
+        {
+          "name": "Create Restaurant Address",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/restaurant/address",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "restaurant",
+                "address"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        },
+        {
+          "name": "Get Presigned Upload Url",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/restaurant/documents/presigned-url",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "restaurant",
+                "documents",
+                "presigned-url"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Confirm Document Upload",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/restaurant/documents/confirm-upload",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "restaurant",
+                "documents",
+                "confirm-upload"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Submit Kyc",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/restaurant/submit-kyc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "restaurant",
+                "submit-kyc"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Verification Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/restaurant/verification-status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "restaurant",
+                "verification-status"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Refresh Verification Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/restaurant/refresh-status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "restaurant",
+                "refresh-status"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

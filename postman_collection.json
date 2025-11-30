@@ -1,0 +1,497 @@
+{
+    "info": {
+        "name": "FastFoodie Restaurant Partner API",
+        "description": "Complete API collection for FastFoodie restaurant partner application",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8000",
+            "type": "string"
+        },
+        {
+            "key": "token",
+            "value": "",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "Authentication",
+            "item": [
+                {
+                    "name": "Send OTP",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"phone_number\": \"+919876543210\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/auth/send-otp",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "send-otp"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Verify OTP",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"phone_number\": \"+919876543210\",\n  \"otp_code\": \"123456\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/auth/verify-otp",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "verify-otp"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Owner",
+            "item": [
+                {
+                    "name": "Create Owner Details",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"full_name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"phone_number\": \"+919876543210\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/owner/details",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "owner",
+                                "details"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Owner Details",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/owner/details",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "owner",
+                                "details"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Restaurant",
+            "item": [
+                {
+                    "name": "Get Restaurant Types",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/restaurant/types",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "restaurant",
+                                "types"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Restaurant",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"restaurant_name\": \"Tasty Bites\",\n  \"restaurant_type\": \"restaurant\",\n  \"fssai_license_number\": \"12345678901234\",\n  \"opening_time\": \"09:00\",\n  \"closing_time\": \"22:00\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/restaurant/details",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "restaurant",
+                                "details"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Available Cuisines",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/restaurant/cuisines/available",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "restaurant",
+                                "cuisines",
+                                "available"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Add Cuisines",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"cuisine_ids\": [1, 2, 4]\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/restaurant/cuisines",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "restaurant",
+                                "cuisines"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Add Address",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"latitude\": 28.6139,\n  \"longitude\": 77.2090,\n  \"address_line_1\": \"123 Main Street\",\n  \"address_line_2\": \"Near City Center\",\n  \"city\": \"New Delhi\",\n  \"state\": \"Delhi\",\n  \"pincode\": \"110001\",\n  \"landmark\": \"Opposite Metro Station\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/restaurant/address",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "restaurant",
+                                "address"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Submit KYC",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/restaurant/submit-kyc",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "restaurant",
+                                "submit-kyc"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Verification Status",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/restaurant/verification-status",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "restaurant",
+                                "verification-status"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Dashboard",
+            "item": [
+                {
+                    "name": "Get Today Summary",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/dashboard/today-summary",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "dashboard",
+                                "today-summary"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Quick Actions",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/dashboard/quick-actions",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "dashboard",
+                                "quick-actions"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Menu",
+            "item": [
+                {
+                    "name": "Get Menu Items",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/menu/items",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "menu",
+                                "items"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Add Menu Item",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Butter Chicken\",\n  \"description\": \"Creamy tomato-based curry\",\n  \"price\": 299.00,\n  \"category\": \"Main Course\",\n  \"is_vegetarian\": false,\n  \"is_available\": true,\n  \"preparation_time\": 20\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/menu/add-item",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "menu",
+                                "add-item"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Orders",
+            "item": [
+                {
+                    "name": "Get New Orders",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/orders/new",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "new"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Ongoing Orders",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/orders/ongoing",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "ongoing"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Accept Order",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/orders/1/accept",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "1",
+                                "accept"
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

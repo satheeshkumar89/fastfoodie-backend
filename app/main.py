@@ -1,0 +1,53 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from app.routers import auth, owner, restaurant, dashboard, menu, orders, admin, customer_auth, customer
+from app.database import engine, Base
+
+# Create database tables
+Base.metadata.create_all(bind=engine)
+
+app = FastAPI(
+    title="FastFoodie API",
+    description="Backend API for FastFoodie (Restaurant Partner & Customer)",
+    version="1.0.0"
+)
+
+# CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, specify actual origins
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Include routers
+app.include_router(auth.router)
+app.include_router(owner.router)
+app.include_router(restaurant.router)
+app.include_router(dashboard.router)
+app.include_router(menu.router)
+app.include_router(orders.router)
+app.include_router(admin.router)
+app.include_router(customer_auth.router)
+app.include_router(customer.router)
+
+
+
+@app.get("/")
+def read_root():
+    return {
+        "message": "FastFoodie Restaurant Partner API",
+        "version": "1.0.0",
+        "status": "running"
+    }
+
+
+@app.get("/health")
+def health_check():
+    return {"status": "healthy"}
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

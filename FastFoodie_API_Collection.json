@@ -1,0 +1,841 @@
+{
+    "info": {
+        "_postman_id": "fastfoodie-api-collection",
+        "name": "FastFoodie Restaurant Partner API",
+        "description": "Complete API collection for FastFoodie restaurant partner application with Firebase OTP authentication",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "token",
+                "value": "{{access_token}}",
+                "type": "string"
+            }
+        ]
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8000",
+            "type": "string"
+        },
+        {
+            "key": "access_token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "phone_number",
+            "value": "+918668198712",
+            "type": "string"
+        },
+        {
+            "key": "otp_code",
+            "value": "",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "Authentication",
+            "item": [
+                {
+                    "name": "Send OTP",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    if (jsonData.data && jsonData.data.otp) {",
+                                    "        pm.collectionVariables.set('otp_code', jsonData.data.otp);",
+                                    "        console.log('OTP saved:', jsonData.data.otp);",
+                                    "    }",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"phone_number\": \"{{phone_number}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/auth/send-otp",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "send-otp"
+                            ]
+                        },
+                        "description": "Send OTP to phone number. In development mode, OTP is returned in response."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Verify OTP",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.collectionVariables.set('access_token', jsonData.access_token);",
+                                    "    console.log('Access token saved');",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"phone_number\": \"{{phone_number}}\",\n  \"otp_code\": \"{{otp_code}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/auth/verify-otp",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "verify-otp"
+                            ]
+                        },
+                        "description": "Verify OTP and get JWT access token"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Resend OTP",
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"phone_number\": \"{{phone_number}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/auth/resend-otp",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "resend-otp"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Authentication endpoints using Firebase OTP"
+        },
+        {
+            "name": "Dashboard",
+            "item": [
+                {
+                    "name": "Get Today Summary",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/dashboard/today-summary",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "dashboard",
+                                "today-summary"
+                            ]
+                        },
+                        "description": "Get today's dashboard summary with orders, earnings, ratings, and growth"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Quick Actions",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/dashboard/quick-actions",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "dashboard",
+                                "quick-actions"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Dashboard Overview",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/dashboard/overview",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "dashboard",
+                                "overview"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Orders",
+            "item": [
+                {
+                    "name": "Get New Orders",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/orders/new",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "new"
+                            ]
+                        },
+                        "description": "Get all new orders with summary info"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Ongoing Orders",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/orders/ongoing",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "ongoing"
+                            ]
+                        },
+                        "description": "Get all ongoing orders (accepted, preparing, ready, picked up)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Completed Orders",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/orders/completed",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "completed"
+                            ]
+                        },
+                        "description": "Get all completed orders (delivered, rejected, cancelled)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Order Details",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/orders/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "1"
+                            ]
+                        },
+                        "description": "Get detailed order information including items, timeline, and billing"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Accept Order",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/orders/1/accept",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "1",
+                                "accept"
+                            ]
+                        },
+                        "description": "Accept a new order"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Mark as Preparing",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/orders/1/preparing",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "1",
+                                "preparing"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Mark as Ready",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/orders/1/ready",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "1",
+                                "ready"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Mark as Picked Up",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/orders/1/pickedup",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "1",
+                                "pickedup"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Mark as Delivered",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/orders/1/delivered",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "1",
+                                "delivered"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Reject Order",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"status\": \"rejected\",\n  \"rejection_reason\": \"Out of ingredients\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/orders/1/reject",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "1",
+                                "reject"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Menu Management",
+            "item": [
+                {
+                    "name": "Get Categories",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/menu/categories",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "menu",
+                                "categories"
+                            ]
+                        },
+                        "description": "Get all unique menu categories"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get All Menu Items",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/menu/items",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "menu",
+                                "items"
+                            ]
+                        },
+                        "description": "Get all menu items"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Menu Items by Category",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/menu/items?category_id=Appetizers",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "menu",
+                                "items"
+                            ],
+                            "query": [
+                                {
+                                    "key": "category_id",
+                                    "value": "Appetizers"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Add Menu Item",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Margherita Pizza\",\n  \"description\": \"Classic pizza with tomato sauce, mozzarella, and basil\",\n  \"price\": 299.00,\n  \"discount_price\": 249.00,\n  \"image_url\": \"https://example.com/pizza.jpg\",\n  \"category\": \"Main Course\",\n  \"is_vegetarian\": true,\n  \"is_available\": true,\n  \"preparation_time\": 20\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/menu/item/add",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "menu",
+                                "item",
+                                "add"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Menu Item",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Margherita Pizza (Updated)\",\n  \"price\": 349.00,\n  \"discount_price\": 299.00\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/menu/item/update/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "menu",
+                                "item",
+                                "update",
+                                "1"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Menu Item",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/menu/item/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "menu",
+                                "item",
+                                "1"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Item Availability",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"is_available\": false\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/menu/item/availability/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "menu",
+                                "item",
+                                "availability",
+                                "1"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Mark Item Out of Stock",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/menu/item/out-of-stock/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "menu",
+                                "item",
+                                "out-of-stock",
+                                "1"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Duplicate Menu Item",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/menu/item/duplicate/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "menu",
+                                "item",
+                                "duplicate",
+                                "1"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Owner Profile",
+            "item": [
+                {
+                    "name": "Get Owner Profile",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/owner/details",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "owner",
+                                "details"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Owner Profile",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"full_name\": \"John Doe\",\n  \"email\": \"john@example.com\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/owner/details",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "owner",
+                                "details"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Restaurant",
+            "item": [
+                {
+                    "name": "Get Restaurant Types",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/restaurant/types",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "restaurant",
+                                "types"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get My Restaurant",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/restaurant/my-restaurant",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "restaurant",
+                                "my-restaurant"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create Restaurant",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"restaurant_name\": \"Tasty Bites\",\n  \"restaurant_type\": \"restaurant\",\n  \"fssai_license_number\": \"12345678901234\",\n  \"opening_time\": \"09:00\",\n  \"closing_time\": \"22:00\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/restaurant/create",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "restaurant",
+                                "create"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Restaurant",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"restaurant_name\": \"Tasty Bites Updated\",\n  \"opening_time\": \"10:00\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/restaurant/update",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "restaurant",
+                                "update"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Toggle Restaurant Status",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"is_open\": true\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/restaurant/toggle-status",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "restaurant",
+                                "toggle-status"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Health Check",
+            "request": {
+                "auth": {
+                    "type": "noauth"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{base_url}}/health",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "health"
+                    ]
+                }
+            },
+            "response": []
+        }
+    ]
+}
