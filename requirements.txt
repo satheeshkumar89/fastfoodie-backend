@@ -15,3 +15,4 @@ redis==5.0.1
 pyotp==2.9.0
 email-validator
 firebase-admin==6.3.0
+alembic==1.13.0
