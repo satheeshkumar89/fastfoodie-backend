@@ -83,8 +83,14 @@ restaurant_data = {
     "closing_time": "22:00"
 }
 resp = client.post("/restaurant/create", json=restaurant_data, headers=owner_headers)
-print_step("Create Restaurant", resp.status_code == 200)
-restaurant_id = resp.json()["data"]["id"]
+if resp.status_code == 400 and "Restaurant already exists" in resp.text:
+    print("   ⚠️ Restaurant already exists. Fetching details...")
+    resp = client.get("/restaurant/details", headers=owner_headers)
+    print_step("Get Existing Restaurant", resp.status_code == 200)
+    restaurant_id = resp.json()["data"]["id"]
+else:
+    print_step("Create Restaurant", resp.status_code == 200)
+    restaurant_id = resp.json()["data"]["id"]
 
 # Add Address
 address_data = {
@@ -98,12 +104,51 @@ address_data = {
     "landmark": "Opposite Mall"
 }
 resp = client.post("/restaurant/address", json=address_data, headers=owner_headers)
-print_step("Add Restaurant Address", resp.status_code == 200)
+if resp.status_code == 400 and "Address already exists" in resp.text:
+    print("   ⚠️ Address already exists. Skipping creation.")
+    print_step("Add Restaurant Address (Skipped)", True)
+else:
+    print_step("Add Restaurant Address", resp.status_code == 200)
 
 # Add Cuisines
 cuisine_data = {"cuisine_ids": [cuisine_id]}
 resp = client.post("/restaurant/cuisines", json=cuisine_data, headers=owner_headers)
 print_step("Add Restaurant Cuisines", resp.status_code == 200)
+
+# Upload Documents
+print("\n--- Upload Documents ---")
+doc_data = {
+    "document_type": "fssai_license",
+    "file_key": "dummy_key_fssai",
+    "filename": "fssai.pdf"
+}
+resp = client.post("/restaurant/documents/confirm-upload", params=doc_data, headers=owner_headers)
+if resp.status_code != 200:
+    print(f"   Error: {resp.text}")
+print_step("Upload FSSAI License", resp.status_code == 200)
+
+doc_data = {
+    "document_type": "restaurant_photo",
+    "file_key": "dummy_key_photo",
+    "filename": "photo.jpg"
+}
+resp = client.post("/restaurant/documents/confirm-upload", params=doc_data, headers=owner_headers)
+if resp.status_code != 200:
+    print(f"   Error: {resp.text}")
+print_step("Upload Restaurant Photo", resp.status_code == 200)
+
+# 3b. KYC Submission
+print("\n--- 3b. KYC Submission ---")
+resp = client.post("/restaurant/submit-kyc", headers=owner_headers)
+print_step("Submit KYC", resp.status_code == 200)
+
+# Check Verification Status
+resp = client.get("/restaurant/verification-status", headers=owner_headers)
+print_step("Get Verification Status", resp.status_code == 200)
+if resp.status_code == 200:
+    status_data = resp.json()["data"]
+    print(f"   Current Status: {status_data.get('status')}")
+    print(f"   Notes: {status_data.get('verification_notes')}")
 
 # 4. Menu Management
 print("\n--- 4. Menu Management ---")

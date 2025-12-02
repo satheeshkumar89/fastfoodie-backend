@@ -7,7 +7,7 @@ from app.schemas import (
     RestaurantCreate, RestaurantUpdate, RestaurantResponse, APIResponse,
     CuisineResponse, RestaurantCuisineCreate, AddressCreate, AddressUpdate,
     AddressResponse, DocumentUploadResponse, PresignedUrlResponse,
-    VerificationStatusResponse
+    VerificationStatusResponse, MenuItemResponse, ReviewResponse
 )
 from app.models import (
     Owner, Restaurant, Cuisine, RestaurantCuisine, Address, Document,
