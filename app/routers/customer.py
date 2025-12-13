@@ -190,16 +190,11 @@ def add_to_cart(
     
     # Check if cart has items from another restaurant
     if cart.restaurant_id and cart.restaurant_id != request.restaurant_id:
-        # For now, we can either clear cart or reject. Let's reject.
-        # In a real app, we might ask user to clear cart.
+        # Automatically clear cart for different restaurant (User Preference)
         if cart.items:
-             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Cart contains items from another restaurant. Please clear cart first."
-            )
-        else:
-            # Cart is empty but has old restaurant_id, update it
-            cart.restaurant_id = request.restaurant_id
+            db.query(CartItem).filter(CartItem.cart_id == cart.id).delete()
+            
+        cart.restaurant_id = request.restaurant_id
     
     if not cart.restaurant_id:
         cart.restaurant_id = request.restaurant_id
@@ -239,6 +234,30 @@ def get_cart(
     return APIResponse(
         success=True,
         message="Cart fetched successfully",
+        data=calculate_cart_totals(cart).dict()
+    )
+
+
+@router.delete("/cart", response_model=APIResponse)
+def clear_cart(
+    db: Session = Depends(get_db),
+    current_customer: Customer = Depends(get_current_customer)
+):
+    """Clear all items from cart"""
+    cart = get_or_create_cart(db, current_customer.id)
+    
+    # Delete all items in the cart
+    db.query(CartItem).filter(CartItem.cart_id == cart.id).delete()
+    
+    # Reset restaurant association
+    cart.restaurant_id = None
+    
+    db.commit()
+    db.refresh(cart)
+    
+    return APIResponse(
+        success=True,
+        message="Cart cleared successfully",
         data=calculate_cart_totals(cart).dict()
     )
 

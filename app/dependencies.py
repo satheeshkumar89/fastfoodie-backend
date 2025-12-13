@@ -83,7 +83,24 @@ def get_current_customer(
         )
     
     customer_id = payload.get("customer_id")
+    
+    # If customer_id is missing, check if it's an owner token and try to find customer by phone
     if customer_id is None:
+        owner_id = payload.get("owner_id")
+        if owner_id:
+            # It's an owner token, try to find corresponding customer by phone
+            phone_number = payload.get("phone_number")
+            if phone_number:
+                customer = db.query(Customer).filter(Customer.phone_number == phone_number).first()
+                if customer:
+                    if not customer.is_active:
+                        raise HTTPException(
+                            status_code=status.HTTP_403_FORBIDDEN,
+                            detail="Customer account is inactive"
+                        )
+                    return customer
+                    
+        # If still no customer found or not an owner token
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid authentication credentials",
