@@ -173,8 +173,20 @@ class NotificationService:
             print(f"✅ Successfully sent {response.success_count} FCM messages")
             if response.failure_count > 0:
                 print(f"❌ Failed to send {response.failure_count} FCM messages")
+                # Clean up dead tokens
+                tokens_to_deactivate = []
                 for idx, resp in enumerate(response.responses):
                     if not resp.success:
-                        print(f"   - Error for token {tokens[idx][:20]}...: {resp.exception}")
+                        error_msg = str(resp.exception)
+                        print(f"   - Error for token {tokens[idx][:20]}...: {error_msg}")
+                        # If token is invalid or not found, mark it as inactive
+                        if "not-found" in error_msg.lower() or "invalid-registration" in error_msg.lower() or "Requested entity was not found" in error_msg:
+                            tokens_to_deactivate.append(tokens[idx])
+                
+                if tokens_to_deactivate:
+                    db.query(DeviceToken).filter(DeviceToken.token.in_(tokens_to_deactivate)).update({"is_active": False}, synchronize_session=False)
+                    db.commit()
+                    print(f"   - Deactivated {len(tokens_to_deactivate)} dead tokens from database")
+
         except Exception as e:
             print(f"❌ Error during FCM multicast send: {e}")
