@@ -29,6 +29,7 @@ class OrderStatusEnum(str, enum.Enum):
     READY = "ready"
     PICKED_UP = "picked_up"
     DELIVERED = "delivered"
+    RELEASED = "released"
     REJECTED = "rejected"
     CANCELLED = "cancelled"
 
@@ -48,6 +49,7 @@ class Owner(Base):
     restaurants = relationship("Restaurant", back_populates="owner")
     otps = relationship("OTP", back_populates="owner")
     device_tokens = relationship("DeviceToken", back_populates="owner")
+    notifications = relationship("Notification", back_populates="owner")
 
 
 class Customer(Base):
@@ -67,6 +69,8 @@ class Customer(Base):
     orders = relationship("Order", back_populates="customer")
     addresses = relationship("CustomerAddress", back_populates="customer")
     cart = relationship("Cart", back_populates="customer", uselist=False)
+    device_tokens = relationship("DeviceToken", back_populates="customer")
+    notifications = relationship("Notification", back_populates="customer")
 
 
 
@@ -224,7 +228,9 @@ class DeviceToken(Base):
     __tablename__ = "device_tokens"
     
     id = Column(Integer, primary_key=True, index=True)
-    owner_id = Column(Integer, ForeignKey("owners.id"), nullable=False)
+    owner_id = Column(Integer, ForeignKey("owners.id"), nullable=True)
+    customer_id = Column(Integer, ForeignKey("customers.id"), nullable=True)
+    delivery_partner_id = Column(Integer, ForeignKey("delivery_partners.id"), nullable=True)
     token = Column(String(500), unique=True, nullable=False)
     device_type = Column(String(50), nullable=False)  # ios, android, web
     is_active = Column(Boolean, default=True)
@@ -233,6 +239,31 @@ class DeviceToken(Base):
     
     # Relationships
     owner = relationship("Owner", back_populates="device_tokens")
+    customer = relationship("Customer", back_populates="device_tokens")
+    delivery_partner = relationship("DeliveryPartner", back_populates="device_tokens")
+
+
+class Notification(Base):
+    __tablename__ = "notifications"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    owner_id = Column(Integer, ForeignKey("owners.id"), nullable=True)
+    customer_id = Column(Integer, ForeignKey("customers.id"), nullable=True)
+    delivery_partner_id = Column(Integer, ForeignKey("delivery_partners.id"), nullable=True)
+    
+    title = Column(String(255), nullable=False)
+    message = Column(Text, nullable=False)
+    notification_type = Column(String(50))  # e.g., 'order_update', 'promotion'
+    order_id = Column(Integer, ForeignKey("orders.id"), nullable=True)
+    
+    is_read = Column(Boolean, default=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    # Relationships
+    owner = relationship("Owner", back_populates="notifications")
+    customer = relationship("Customer", back_populates="notifications")
+    delivery_partner = relationship("DeliveryPartner", back_populates="notifications")
+    order = relationship("Order")
 
 
 class MenuItem(Base):
@@ -275,6 +306,8 @@ class DeliveryPartner(Base):
     
     # Relationships
     orders = relationship("Order", back_populates="delivery_partner")
+    device_tokens = relationship("DeviceToken", back_populates="delivery_partner")
+    notifications = relationship("Notification", back_populates="delivery_partner")
 
 
 
@@ -305,6 +338,7 @@ class Order(Base):
     ready_at = Column(DateTime(timezone=True), nullable=True)
     pickedup_at = Column(DateTime(timezone=True), nullable=True)
     delivered_at = Column(DateTime(timezone=True), nullable=True)
+    released_at = Column(DateTime(timezone=True), nullable=True)
     rejected_at = Column(DateTime(timezone=True), nullable=True)
     rejection_reason = Column(Text, nullable=True)
     completed_at = Column(DateTime(timezone=True), nullable=True)

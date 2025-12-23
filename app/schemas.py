@@ -221,6 +221,46 @@ class CustomerTokenResponse(BaseModel):
     customer: CustomerResponse
 
 
+# ============= Notification & Device Token Schemas =============
+class DeviceTokenCreate(BaseModel):
+    token: str
+    device_type: str # ios, android, web
+
+
+class DeviceTokenResponse(BaseModel):
+    id: int
+    token: str
+    device_type: str
+    is_active: bool
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class NotificationResponse(BaseModel):
+    id: int
+    title: str
+    message: str
+    notification_type: str
+    order_id: Optional[int]
+    is_read: bool
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class NotificationCreate(BaseModel):
+    title: str
+    message: str
+    notification_type: str
+    order_id: Optional[int] = None
+    owner_id: Optional[int] = None
+    customer_id: Optional[int] = None
+    delivery_partner_id: Optional[int] = None
+
+
 
 # ============= Category Schemas =============
 class CategoryResponse(BaseModel):
@@ -337,6 +377,7 @@ class OrderTimeline(BaseModel):
     ready_at: Optional[datetime] = None
     pickedup_at: Optional[datetime] = None
     delivered_at: Optional[datetime] = None
+    released_at: Optional[datetime] = None
     rejected_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
 

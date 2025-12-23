@@ -61,4 +61,21 @@ class VerificationService:
         restaurant.verification_notes = notes
         db.commit()
         
+        # Notify owner about verification update
+        from app.services.notification_service import NotificationService
+        import asyncio
+        
+        # Use a simple async wrapper if needed, or just call if the context allows
+        # Since this is a synchronous service method called from an async route (usually)
+        # We can just create the notification directly in DB
+        
+        status_text = status.value.replace('_', ' ').title()
+        NotificationService.create_notification_sync(
+            db=db,
+            owner_id=restaurant.owner_id,
+            title=f"Verification {status_text}",
+            message=f"Your restaurant verification status has been updated to {status_text}. {notes if notes else ''}",
+            notification_type="verification_update"
+        )
+        
         return True

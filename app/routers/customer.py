@@ -13,6 +13,7 @@ from app.dependencies import get_current_customer
 from typing import List
 from decimal import Decimal
 from datetime import datetime
+from app.services.notification_service import NotificationService
 
 
 router = APIRouter(prefix="/customer", tags=["Customer"])
@@ -325,7 +326,7 @@ def generate_order_number():
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
 
 @router.post("/orders", response_model=APIResponse)
-def create_order(
+async def create_order(
     request: OrderCreateRequest,
     db: Session = Depends(get_db),
     current_customer: Customer = Depends(get_current_customer)
@@ -390,6 +391,18 @@ def create_order(
     db.query(CartItem).filter(CartItem.cart_id == cart.id).delete()
     cart.restaurant_id = None
     db.commit()
+    
+    # Notify owner about new order
+    restaurant = db.query(Restaurant).filter(Restaurant.id == request.restaurant_id).first()
+    if restaurant:
+        await NotificationService.create_notification(
+            db=db,
+            owner_id=restaurant.owner_id,
+            title="New Order Received!",
+            message=f"You have a new order #{order.order_number} from {order.customer_name}.",
+            notification_type="new_order",
+            order_id=order.id
+        )
     
     return APIResponse(
         success=True,
@@ -650,6 +663,7 @@ def track_order(
     steps = [
         ("Order Confirmed", "Your order has been confirmed by the restaurant", "accepted_at"),
         ("Preparing", "Restaurant is preparing your delicious food", "preparing_at"),
+        ("Handed Over to Partner", "Order released and moving to you", "released_at"),
         ("Out for Delivery", "Your order is on the way", "pickedup_at"),
         ("Delivered", "Enjoy your meal!", "delivered_at")
     ]
@@ -661,10 +675,12 @@ def track_order(
         current_status_index = 0
     elif order.status == "preparing" or order.status == "ready":
         current_status_index = 1
-    elif order.status == "picked_up":
+    elif order.status == "released":
         current_status_index = 2
-    elif order.status == "delivered":
+    elif order.status == "picked_up":
         current_status_index = 3
+    elif order.status == "delivered":
+        current_status_index = 4
         
     for i, (title, subtitle, time_field) in enumerate(steps):
         timestamp = getattr(order, time_field)

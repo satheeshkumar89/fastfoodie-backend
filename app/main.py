@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import auth, owner, restaurant, dashboard, menu, orders, admin, customer_auth, customer
+from app.routers import auth, owner, restaurant, dashboard, menu, orders, admin, customer_auth, customer, notifications
 from app.database import engine, Base
 
 # Create database tables
@@ -31,6 +31,7 @@ app.include_router(orders.router)
 app.include_router(admin.router)
 app.include_router(customer_auth.router)
 app.include_router(customer.router)
+app.include_router(notifications.router)
 
 
 

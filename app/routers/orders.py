@@ -162,9 +162,14 @@ async def update_order_status_helper(
     # Broadcast to restaurant WebSocket
     await broadcast_new_order(restaurant_id, order)
     
-    # Send FCM notification
-    # In a real app, we would fetch customer/rider tokens here
-    await NotificationService.send_order_update(order.id, new_status.value)
+    # Send FCM notification and save to DB
+    await NotificationService.send_order_update(
+        db=db,
+        order_id=order.id,
+        status=new_status.value,
+        customer_id=order.customer_id,
+        owner_id=order.restaurant.owner_id if order.restaurant else None
+    )
     
     return APIResponse(
         success=True,
@@ -253,6 +258,22 @@ async def delivered_order(
     )
 
 
+@router.put("/{order_id}/release", response_model=APIResponse)
+async def release_order(
+    order_id: int,
+    restaurant: Restaurant = Depends(get_current_restaurant),
+    db: Session = Depends(get_db)
+):
+    """Mark order as released from restaurant"""
+    return await update_order_status_helper(
+        order_id, 
+        OrderStatusEnum.RELEASED, 
+        restaurant.id, 
+        db, 
+        "released_at"
+    )
+
+
 @router.post("/{order_id}/reject", response_model=APIResponse)
 async def reject_order(
     order_id: int,
@@ -278,6 +299,14 @@ async def reject_order(
         order.rejection_reason = status_update.rejection_reason
         db.commit()
         db.refresh(order)
+        
+        # Send notification to customer
+        await NotificationService.send_order_update(
+            db=db,
+            order_id=order.id,
+            status="rejected",
+            customer_id=order.customer_id
+        )
         
         # Broadcast update
         await broadcast_new_order(restaurant.id, order)
@@ -440,6 +469,7 @@ async def broadcast_new_order(restaurant_id: int, order: Order, event_type: str 
             OrderStatusEnum.READY: "ready",
             OrderStatusEnum.PICKED_UP: "pickedup",
             OrderStatusEnum.DELIVERED: "delivered",
+            OrderStatusEnum.RELEASED: "order_released",
             OrderStatusEnum.REJECTED: "order_rejected",
             OrderStatusEnum.CANCELLED: "order_cancelled"
         }
