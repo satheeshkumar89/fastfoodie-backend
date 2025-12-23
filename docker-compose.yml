@@ -64,8 +64,8 @@ services:
     networks:
       - fastfoodie_network
     volumes:
-      - ./app:/app/app
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+      - .:/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
 
 volumes:
   mysql_data:
