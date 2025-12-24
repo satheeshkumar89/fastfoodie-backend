@@ -543,10 +543,16 @@ class CartResponse(BaseModel):
 class DeliveryPartnerResponse(BaseModel):
     id: int
     full_name: str
+    email: Optional[str]
     phone_number: str
     vehicle_number: Optional[str]
+    vehicle_type: Optional[str]
+    license_number: Optional[str]
     rating: Decimal
     profile_photo: Optional[str]
+    is_online: bool
+    is_registered: bool
+    verification_status: str
     
     class Config:
         from_attributes = True

@@ -3,7 +3,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.services.jwt_service import verify_token
-from app.models import Owner, Restaurant, Customer
+from app.models import Owner, Restaurant, Customer, DeliveryPartner
 
 security = HTTPBearer()
 
@@ -122,4 +122,44 @@ def get_current_customer(
         )
     
     return customer
+
+
+def get_current_delivery_partner(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+) -> DeliveryPartner:
+    """Get current authenticated delivery partner from JWT token"""
+    token = credentials.credentials
+    payload = verify_token(token)
+    
+    if payload is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    delivery_partner_id = payload.get("delivery_partner_id")
+    if delivery_partner_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    delivery_partner = db.query(DeliveryPartner).filter(DeliveryPartner.id == delivery_partner_id).first()
+    if delivery_partner is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Delivery partner not found",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    if not delivery_partner.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Delivery partner account is inactive"
+        )
+    
+    return delivery_partner
 

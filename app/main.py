@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import auth, owner, restaurant, dashboard, menu, orders, admin, customer_auth, customer, notifications
+from app.routers import auth, owner, restaurant, dashboard, menu, orders, admin, customer_auth, customer, notifications, delivery_partner
 from app.database import engine, Base
 
 # Create database tables
@@ -8,7 +8,7 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="FastFoodie API",
-    description="Backend API for FastFoodie (Restaurant Partner & Customer)",
+    description="Backend API for FastFoodie (Restaurant Partner, Customer & Delivery Partner)",
     version="1.0.0"
 )
 
@@ -32,6 +32,8 @@ app.include_router(admin.router)
 app.include_router(customer_auth.router)
 app.include_router(customer.router)
 app.include_router(notifications.router)
+app.include_router(delivery_partner.router)
+
 
 
 

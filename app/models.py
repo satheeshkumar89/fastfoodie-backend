@@ -212,6 +212,7 @@ class OTP(Base):
     id = Column(Integer, primary_key=True, index=True)
     owner_id = Column(Integer, ForeignKey("owners.id"), nullable=True)
     customer_id = Column(Integer, ForeignKey("customers.id"), nullable=True)
+    delivery_partner_id = Column(Integer, ForeignKey("delivery_partners.id"), nullable=True)
     phone_number = Column(String(15), nullable=False, index=True)
     otp_code = Column(String(10), nullable=False)
     is_verified = Column(Boolean, default=False)
@@ -221,6 +222,8 @@ class OTP(Base):
     # Relationships
     owner = relationship("Owner", back_populates="otps")
     customer = relationship("Customer", back_populates="otps")
+    delivery_partner = relationship("DeliveryPartner", back_populates="otps")
+
 
 
 
@@ -297,17 +300,29 @@ class DeliveryPartner(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     full_name = Column(String(255), nullable=False)
+    email = Column(String(255), nullable=True)
     phone_number = Column(String(15), unique=True, nullable=False)
     vehicle_number = Column(String(20), nullable=True)
+    vehicle_type = Column(String(50), nullable=True)  # bike, scooter, car, bicycle
+    license_number = Column(String(50), nullable=True)
     rating = Column(DECIMAL(3, 2), default=5.0)
     profile_photo = Column(String(500), nullable=True)
     is_active = Column(Boolean, default=True)
+    is_online = Column(Boolean, default=False)  # Online/Offline status
+    is_registered = Column(Boolean, default=False)  # Complete registration status
+    verification_status = Column(Enum(VerificationStatusEnum), default=VerificationStatusEnum.PENDING)  # Admin approval
+    verification_notes = Column(Text, nullable=True)  # Admin notes for approval/rejection
+    last_online_at = Column(DateTime(timezone=True), nullable=True)
+    last_offline_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
     # Relationships
     orders = relationship("Order", back_populates="delivery_partner")
     device_tokens = relationship("DeviceToken", back_populates="delivery_partner")
     notifications = relationship("Notification", back_populates="delivery_partner")
+    otps = relationship("OTP", back_populates="delivery_partner")
+
 
 
 

@@ -763,3 +763,121 @@ def track_order(
 
 
 
+#============= Delivery Partner Location Tracking =============
+
+@router.get("/orders/{order_id}/track-location", response_model=APIResponse)
+def track_delivery_partner_location(
+    order_id: int,
+    db: Session = Depends(get_db),
+    current_customer: Customer = Depends(get_current_customer)
+):
+    """
+    Track delivery partner's real-time location for an active order.
+    Returns the current GPS location of the delivery partner assigned to this order.
+    """
+    from sqlalchemy import text
+    from math import radians, sin, cos, sqrt, atan2
+    
+    # Get order
+    order = db.query(Order).filter(
+        Order.id == order_id,
+        Order.customer_id == current_customer.id
+    ).first()
+    
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    # Check if order has delivery partner assigned
+    if not order.delivery_partner_id:
+        return APIResponse(
+            success=True,
+            message="No delivery partner assigned yet",
+            data={
+                "tracking_available": False,
+                "message": "Delivery partner will be assigned soon"
+            }
+        )
+    
+    # Get delivery partner's latest location
+    try:
+        query = text("""
+            SELECT latitude, longitude, accuracy, bearing, speed, created_at
+            FROM delivery_partner_locations
+            WHERE delivery_partner_id = :partner_id
+            AND (order_id = :order_id OR order_id IS NULL)
+            ORDER BY created_at DESC
+            LIMIT 1
+        """)
+        
+        result = db.execute(query, {
+            "partner_id": order.delivery_partner_id,
+            "order_id": order_id
+        }).fetchone()
+        
+        if result:
+            partner_lat, partner_lng, accuracy, bearing, speed, updated_at = result
+            
+            # Calculate distance if customer address has coordinates
+            # For now, return basic location data
+            # In production, you'd geocode the delivery address
+            
+            # Simple ETA estimation (very basic)
+            avg_speed_kmh = (speed * 3.6) if speed and speed > 0 else 20  # Convert m/s to km/h, default 20 km/h
+            estimated_distance_km = 2.0  # Mock distance, should calculate from addresses
+            eta_minutes = int((estimated_distance_km / avg_speed_kmh) * 60)
+            
+            return APIResponse(
+                success=True,
+                message="Delivery partner location retrieved",
+                data={
+                    "tracking_available": True,
+                    "delivery_partner": {
+                        "id": order.delivery_partner.id,
+                        "name": order.delivery_partner.full_name,
+                        "phone": order.delivery_partner.phone_number,
+                        "vehicle_type": order.delivery_partner.vehicle_type,
+                        "vehicle_number": order.delivery_partner.vehicle_number,
+                        "rating": float(order.delivery_partner.rating) if order.delivery_partner.rating else 5.0
+                    },
+                    "location": {
+                        "latitude": partner_lat,
+                        "longitude": partner_lng,
+                        "accuracy": accuracy,
+                        "bearing": bearing,
+                        "speed_mps": speed,
+                        "speed_kmh": round(speed * 3.6, 2) if speed else None,
+                        "last_updated": updated_at.isoformat() if updated_at else None
+                    },
+                    "eta_minutes": eta_minutes,
+                    "order_status": order.status
+                }
+            )
+        else:
+            return APIResponse(
+                success=True,
+                message="Delivery partner location not available",
+                data={
+                    "tracking_available": False,
+                    "delivery_partner": {
+                        "id": order.delivery_partner.id,
+                        "name": order.delivery_partner.full_name,
+                        "phone": order.delivery_partner.phone_number
+                    },
+                    "message": "Location will be available once delivery starts"
+                }
+            )
+    except Exception as e:
+        # Table doesn't exist yet or other error
+        return APIResponse(
+            success=True,
+            message="Location tracking will be available soon",
+            data={
+                "tracking_available": False,
+                "delivery_partner": {
+                    "id": order.delivery_partner.id,
+                    "name": order.delivery_partner.full_name,
+                    "phone": order.delivery_partner.phone_number
+                } if order.delivery_partner else None,
+                "note": "Location tracking feature coming soon"
+            }
+        )

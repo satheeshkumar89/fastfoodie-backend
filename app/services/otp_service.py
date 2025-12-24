@@ -16,7 +16,7 @@ def generate_otp(length: int = None) -> str:
     return ''.join(random.choices(string.digits, k=length))
 
 
-def create_otp(db: Session, phone_number: str, owner_id: int = None, customer_id: int = None) -> OTP:
+def create_otp(db: Session, phone_number: str, owner_id: int = None, customer_id: int = None, delivery_partner_id: int = None) -> OTP:
     """Create and save OTP to database"""
     # Invalidate any existing OTPs for this phone number
     db.query(OTP).filter(
@@ -30,6 +30,7 @@ def create_otp(db: Session, phone_number: str, owner_id: int = None, customer_id
     otp = OTP(
         owner_id=owner_id,
         customer_id=customer_id,
+        delivery_partner_id=delivery_partner_id,
         phone_number=phone_number,
         otp_code=otp_code,
         expires_at=expires_at
@@ -39,6 +40,7 @@ def create_otp(db: Session, phone_number: str, owner_id: int = None, customer_id
     db.refresh(otp)
     
     return otp
+
 
 
 
